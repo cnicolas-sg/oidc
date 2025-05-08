@@ -724,9 +724,8 @@ abstract class OidcUserManagerBase {
   /// If token can't be refreshed `null` will be returned.
   ///
   /// Token can be refreshed in the following cases:
-  /// 1. grant_types_supported MUST include refresh_token
-  /// 2. the [currentUser] MUST NOT be null
-  /// 3. the `currentUser.token` MUST include refreshToken
+  /// 1. the [currentUser] MUST NOT be null
+  /// 2. the `currentUser.token` MUST include refreshToken
   ///
   /// If any of these conditions are not met, null is returned.
   ///
@@ -738,11 +737,6 @@ abstract class OidcUserManagerBase {
     ensureInit();
     final discoveryDocument =
         discoveryDocumentOverride ?? this.discoveryDocument;
-    if (!discoveryDocument.grantTypesSupportedOrDefault
-        .contains(OidcConstants_GrantType.refreshToken)) {
-      //Server doesn't support refresh_token grant.
-      return null;
-    }
 
     final refreshToken =
         overrideRefreshToken ?? currentUser?.token.refreshToken;
@@ -798,13 +792,7 @@ abstract class OidcUserManagerBase {
     eventsController.add(
       OidcTokenExpiringEvent.now(currentToken: event),
     );
-
-    if (!discoveryDocument.grantTypesSupportedOrDefault
-        .contains(OidcConstants_GrantType.refreshToken)) {
-      //Server doesn't support refresh_token grant.
-      return;
-    }
-
+    
     final refreshToken = event.refreshToken;
     if (refreshToken == null) {
       return;
